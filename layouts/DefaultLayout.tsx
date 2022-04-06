@@ -54,9 +54,8 @@ export const DefaultLayout: React.FC = ({ children }) => {
             </ListItem>
           </List>
         </Box>
-        <Box p="2" overflowY="auto">
-          {children}
-        </Box>
+
+        {children}
       </Stack>
     </Stack>
   )

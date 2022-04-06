@@ -1,9 +1,39 @@
-import { Textarea } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { DefaultLayout } from '../layouts/DefaultLayout'
+// import { Editor } from 'react-draft-wysiwyg' // OPTIMIZE: 以下で定義
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+
+import dynamic from 'next/dynamic'
+import { EditorProps } from 'react-draft-wysiwyg'
+import { css } from '@emotion/react'
+import { Flex } from '@chakra-ui/react'
+import { useState } from 'react'
+import { EditorState } from 'draft-js'
+
+// NOTE: エラー回避
+// ref. https://github.com/jpuri/react-draft-wysiwyg/issues/893#issuecomment-890363473
+const Editor = dynamic<EditorProps>(
+  () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
+  { ssr: false }
+)
+
+const editorStyle = css`
+  word-break: break-word;
+
+  .toolbar {
+    margin-bottom: 0;
+    border-width: 0 0 1px;
+    padding: 8px 5px 6px;
+  }
+  .editor {
+    padding: 0 1em;
+  }
+`
 
 const Home: NextPage = () => {
+  const [editorState, setEditorState] = useState<EditorState>()
+
   return (
     <DefaultLayout>
       <Head>
@@ -12,9 +42,18 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <Textarea placeholder="Here is a sample placeholder" />
-      </main>
+      <Flex flex="1" as="main" css={editorStyle}>
+        <Editor
+          editorState={editorState}
+          toolbarClassName="toolbar"
+          // wrapperClassName="wrapper"
+          editorClassName="editor"
+          onEditorStateChange={(EditorState) => {
+            console.log({ EditorState })
+          }}
+          localization={{ locale: 'ja' }}
+        />
+      </Flex>
     </DefaultLayout>
   )
 }

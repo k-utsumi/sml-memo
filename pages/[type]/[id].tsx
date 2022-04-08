@@ -1,11 +1,15 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { ChangeEventHandler, useEffect, useState } from 'react'
-import { getMemos, updateMemo } from '../features/memo/functions'
-import { MemoLayout } from '../features/memo/layouts'
-import type { Memo } from '../features/memo/types'
+import { getMemos, updateMemo } from '../../features/memo/functions'
+import { MemoLayout } from '../../features/memo/layouts'
+import type { Memo, MemoType } from '../../features/memo/types'
 
-const Home: NextPage = () => {
+const DetailPage: NextPage = () => {
+  const router = useRouter()
+  const { type, id } = router.query
+
   const [value, setValue] = useState('')
   const [memos, setMemos] = useState<Memo[]>([])
 
@@ -34,6 +38,7 @@ const Home: NextPage = () => {
     <MemoLayout
       hndleSaveClick={hndleSaveMemo}
       {...{ handleInputChange, memos, value }}
+      type={type as MemoType}
     >
       <Head>
         <title>SML Memo</title>
@@ -44,4 +49,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default DetailPage

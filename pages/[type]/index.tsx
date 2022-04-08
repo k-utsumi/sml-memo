@@ -1,11 +1,18 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { ChangeEventHandler, useEffect, useState } from 'react'
-import { getMemos, updateMemo } from '../features/memo/functions'
-import { MemoLayout } from '../features/memo/layouts'
-import type { Memo } from '../features/memo/types'
+import { MEMO_TYPE_NAMES } from '../../features/memo/constants'
+import { getMemos, updateMemo } from '../../features/memo/functions'
+import { MemoLayout } from '../../features/memo/layouts'
+import type { Memo, MemoType } from '../../features/memo/types'
 
-const Home: NextPage = () => {
+const IndexPage: NextPage = () => {
+  const router = useRouter()
+  const { type } = router.query
+  const isValidMemoType = MEMO_TYPE_NAMES.some((typeName) => typeName === type)
+  type === 'all' && router.replace('/')
+
   const [value, setValue] = useState('')
   const [memos, setMemos] = useState<Memo[]>([])
 
@@ -18,6 +25,10 @@ const Home: NextPage = () => {
   ) => {
     setValue(event.target.value)
   }
+
+  useEffect(() => {
+    type && !isValidMemoType && router.replace('/')
+  }, [type])
 
   useEffect(() => {
     getMemos().then((memos) => {
@@ -34,6 +45,7 @@ const Home: NextPage = () => {
     <MemoLayout
       hndleSaveClick={hndleSaveMemo}
       {...{ handleInputChange, memos, value }}
+      type={type as MemoType}
     >
       <Head>
         <title>SML Memo</title>
@@ -44,4 +56,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default IndexPage
